@@ -4,14 +4,27 @@ from django.db import models
 User = get_user_model()
 
 
+class Group(models.Model):
+    title = models.CharField(
+        "Имя группы",
+        max_length=200)
+
+
 class Post(models.Model):
     text = models.TextField()
+
     pub_date = models.DateTimeField(
-        "Дата публикации", auto_now_add=True
-    )
+        "Дата публикации",
+        auto_now_add=True)
+
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="posts"
-    )
+        User, on_delete=models.CASCADE,
+        related_name="posts")
+
+    group = models.ForeignKey(
+        Group, on_delete=models.CASCADE,
+        related_name="groups",
+        blank=True, null=True)
 
     def __str__(self):
         return self.text
@@ -19,12 +32,28 @@ class Post(models.Model):
 
 class Comment(models.Model):
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="comments"
-    )
+        User, on_delete=models.CASCADE,
+        related_name="comments")
+
     post = models.ForeignKey(
-        Post, on_delete=models.CASCADE, related_name="comments"
-    )
+        Post, on_delete=models.CASCADE,
+        related_name="comments")
+
     text = models.TextField()
+
     created = models.DateTimeField(
-        "Дата добавления", auto_now_add=True, db_index=True
-    )
+        "Дата добавления",
+        auto_now_add=True,
+        db_index=True)
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE,
+        related_name="follower",
+        blank=True, null=True,)
+
+    following = models.ForeignKey(
+        User, on_delete=models.CASCADE,
+        related_name="following",
+        blank=True, null=True,)
